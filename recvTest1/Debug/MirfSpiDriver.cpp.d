@@ -1,3 +1,3 @@
-C:\Users\Fish\AppData\Local\Temp\VMBuilds\recvTest1\uno\Debug\MirfSpiDriver.cpp.o: \
- D:\待整理\学习\2018毕业设计\Project\nrf24l01\Mirf\MirfSpiDriver.cpp \
- D:\待整理\学习\2018毕业设计\Project\nrf24l01\Mirf\MirfSpiDriver.h
+C:\Users\Fish\AppData\Local\Temp\VMBuilds\recvTest1\leonardo\Debug\MirfSpiDriver.cpp.o: \
+ C:\Users\Fish\Documents\GitHub\Arduino-nRF24L01\Mirf\MirfSpiDriver.cpp \
+ C:\Users\Fish\Documents\GitHub\Arduino-nRF24L01\Mirf\MirfSpiDriver.h

@@ -203,7 +203,7 @@ void Nrf24l::send(uint8_t * value)
 {
     uint8_t status;
     status = getStatus();
-
+	configRegister(STATUS, status);
     while (PTX) {
 	    status = getStatus();
 

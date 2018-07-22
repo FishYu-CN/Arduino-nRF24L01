@@ -15,12 +15,18 @@
 * statements not displaying the result and load
 * 'ping_server_interupt' on the server.
 */
-
+#include <OneWire.h>
+#include <DallasTemperature.h>
 #include <SPI.h>
 #include "Mirf.h"
 #include "nRF24L01.h"
 #include "MirfHardwareSpiDriver.h"
+#define ONE_WIRE_BUS A0
+// Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
+OneWire oneWire(ONE_WIRE_BUS);
 
+// Pass our oneWire reference to Dallas Temperature. 
+DallasTemperature sensors(&oneWire);
 unsigned char TADDR[5] = { 0x34,0x43,0x10,0x10,0x01 };
 unsigned long time;
 uint8_t sendbuf[32], recvbuf[32];
@@ -35,7 +41,9 @@ void setup() {
 	* Mirf.csnPin = 9;
 	* Mirf.cePin = 7;
 	*/
-
+	pinMode(2, OUTPUT);
+	digitalWrite(2, HIGH);
+	sensors.begin();
 	Mirf.cePin = 8;
 	Mirf.csnPin = 7;
 	Mirf.payload = 32;
@@ -112,26 +120,37 @@ void setup() {
 	//Serial.println(buf[0], HEX);
 	//Mirf.ceLow();
 
-	sendbuf[0] = 6;
+	sendbuf[0] = 11;
 	sendbuf[1] = 'C';
-	sendbuf[2] = '1';
+	sendbuf[2] = '2';
 	sendbuf[3] = ':';
-	sendbuf[4] = '0';
-	sendbuf[5] = '5';
-	sendbuf[6] = '0';
+	sendbuf[4] = 'H';
+	sendbuf[5] = '0';
+	sendbuf[6] = '5';
+	sendbuf[7] = '0';
+	sendbuf[8] = 'T';
+	sendbuf[9] = '0';
+	sendbuf[10] = '5';
+	sendbuf[11] = '0';
+
 }
 
 void loop() {
 
-	unsigned int raw;
+	unsigned int raw,rawTemp;
+	sensors.requestTemperatures(); // Send the command to get temperatures
+	Serial.println(rawTemp=sensors.getTempCByIndex(0));
 	Mirf.setTADDR(TADDR);
-	raw = analogRead(A0);
+	raw = analogRead(A1);
 
-	raw = map(raw, 0, 1024, 0, 100);
+	raw = map(raw, 0, 1023, 100, 0);
 	Serial.println(raw);
-	sendbuf[4] = (raw / 100) + '0';
-	sendbuf[5] = (raw / 10) + '0';
-	sendbuf[6] = (raw % 10) + '0';
+	sendbuf[5] = (raw / 100) + '0';
+	sendbuf[6] = ((raw / 10)%10) + '0';
+	sendbuf[7] = (raw % 10) + '0';
+	sendbuf[9] = (rawTemp / 100) + '0';
+	sendbuf[10] = ((rawTemp / 10)%10) + '0';
+	sendbuf[11] = (rawTemp % 10) + '0';
 	Mirf.send(sendbuf);
 	while (Mirf.isSending()) {
 	}
@@ -153,7 +172,7 @@ void loop() {
 
 		Mirf.getData(recvbuf);
 
-		if (recvbuf[2] == '1')
+		if (recvbuf[2] == '2')
 		{
 			if (recvbuf[4] == 'O')
 				digitalWrite(2, LOW);
